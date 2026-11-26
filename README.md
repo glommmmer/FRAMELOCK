@@ -1,8 +1,8 @@
 <div align="center">
 
-# FRAMELOCK
+# FRAMELOCK-视频检索平台
 
-**用一句话，锁定视频里的那一幕。**
+**拍了很多视频素材，但是找不到想要的那一小段？FRAMELOCK帮你解决！**
 
 Java 21 · Spring Boot 3 · Vue 3 · LangChain4j
 
