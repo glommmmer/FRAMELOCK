@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1000" viewBox="0 0 1100 1000" role="img" aria-labelledby="title desc">
+<title id="title">FRAMELOCK 视频解析与片段检索</title>
+<desc id="desc">上传后生成并发布索引；检索时融合关键词与向量，再读取原画面核验。证据不足时 Agent 定向补查。MinIO 保存新视频，OSS 承担历史对象及 ASR 音频中转。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#34362f"/></marker></defs>
+<rect width="1100" height="1000" fill="#f4f4ef"/>
+<g font-family="Microsoft YaHei, PingFang SC, Noto Sans CJK SC, sans-serif" fill="#171914">
+<text x="50" y="48" font-size="16" fill="#5b604e" font-weight="400">FRAMELOCK / SYSTEM FLOW</text>
+<text x="50" y="92" font-size="30" fill="#171914" font-weight="700">上传时解析，查找时回到原画面确认</text>
+<path d="M50 115 H1050" stroke="#252720" stroke-width="2"/>
+<text x="60" y="150" font-size="20" fill="#171914" font-weight="700">01  视频解析与索引</text>
+<text x="600" y="150" font-size="20" fill="#171914" font-weight="700">02  查询与核验</text>
+<rect x="60" y="175" width="440" height="92" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="82" y="208" font-size="23" fill="#171914" font-weight="700">分片上传 → MinIO</text>
+<text x="82" y="237" font-size="17" fill="#55594b" font-weight="400">5 MiB 分片、校验、断点续传</text>
+<rect x="60" y="300" width="440" height="92" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="82" y="333" font-size="23" fill="#171914" font-weight="700">MySQL → Outbox → RocketMQ</text>
+<text x="82" y="362" font-size="17" fill="#55594b" font-weight="400">保存任务事实，异步分发解析阶段</text>
+<rect x="60" y="425" width="440" height="92" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="82" y="458" font-size="23" fill="#171914" font-weight="700">Worker / FFmpeg</text>
+<text x="82" y="487" font-size="17" fill="#55594b" font-weight="400">读取视频、连续取帧、提取音频</text>
+<rect x="60" y="550" width="440" height="110" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="82" y="583" font-size="23" fill="#171914" font-weight="700">VideoContext / 统一上下文</text>
+<text x="82" y="612" font-size="17" fill="#55594b" font-weight="400">连续画面描述 + OCR + ASR</text>
+<text x="82" y="635" font-size="17" fill="#55594b" font-weight="400">保留时间戳、证据位置及解析版本</text>
+<rect x="60" y="700" width="440" height="92" fill="#e7f0c7" stroke="#252720" stroke-width="2"/>
+<text x="82" y="733" font-size="23" fill="#171914" font-weight="700">发布片段索引</text>
+<text x="82" y="762" font-size="17" fill="#55594b" font-weight="400">MySQL 片段记录 + Qdrant 向量</text>
+<rect x="600" y="175" width="440" height="92" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="622" y="208" font-size="23" fill="#171914" font-weight="700">自然语言查询</text>
+<text x="622" y="237" font-size="17" fill="#55594b" font-weight="400">选择项目，描述想找的画面</text>
+<rect x="600" y="300" width="440" height="92" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="622" y="333" font-size="23" fill="#171914" font-weight="700">混合召回 / RRF</text>
+<text x="622" y="362" font-size="17" fill="#55594b" font-weight="400">融合关键词与向量，按权限和版本过滤</text>
+<rect x="600" y="425" width="440" height="92" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="622" y="458" font-size="23" fill="#171914" font-weight="700">原画面核验 / Critic</text>
+<text x="622" y="487" font-size="17" fill="#55594b" font-weight="400">检查动作、否定条件和时间边界</text>
+<rect x="600" y="550" width="440" height="110" fill="#e7f0c7" stroke="#252720" stroke-width="2"/>
+<text x="622" y="583" font-size="23" fill="#171914" font-weight="700">返回片段 → 回看 → 收藏</text>
+<text x="622" y="612" font-size="17" fill="#55594b" font-weight="400">来源、起止时间与判断依据</text>
+<text x="622" y="635" font-size="17" fill="#55594b" font-weight="400">仅返回通过核验的命中</text>
+<rect x="600" y="700" width="440" height="92" fill="#ffffff" stroke="#252720" stroke-width="2"/>
+<text x="622" y="733" font-size="23" fill="#171914" font-weight="700">Agent 定向补查</text>
+<text x="622" y="762" font-size="17" fill="#55594b" font-weight="400">调整查询、扩展上下文或加密采样</text>
+<path d="M280 267 V298" fill="none" stroke="#34362f" stroke-width="2"/>
+<path d="M280 392 V423" fill="none" stroke="#34362f" stroke-width="2"/>
+<path d="M280 517 V548" fill="none" stroke="#34362f" stroke-width="2"/>
+<path d="M820 267 V298" fill="none" stroke="#34362f" stroke-width="2"/>
+<path d="M820 392 V423" fill="none" stroke="#34362f" stroke-width="2"/>
+<path d="M820 517 V548" fill="none" stroke="#34362f" stroke-width="2"/>
+<path d="M280 660 V698" fill="none" stroke="#34362f" stroke-width="2"/>
+<path d="M500 746 H550 V346 H598" fill="none" stroke="#34362f" stroke-width="2"/>
+<text x="508" y="683" font-size="13" fill="#55594b" font-weight="400">已发布</text>
+<path d="M1040 471 H1057 V746 H1042" fill="none" stroke="#34362f" stroke-width="2" stroke-dasharray="7 5"/>
+<path d="M1040 766 H1080 V346 H1042" fill="none" stroke="#34362f" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="855" y="687" font-size="15" fill="#55594b" font-weight="400">证据不足且未达限制</text>
+<rect x="60" y="830" width="980" height="128" fill="#171914"/>
+<text x="82" y="862" font-size="20" fill="#dbff58" font-weight="700">存储与执行边界</text>
+<text x="82" y="892" font-size="17" fill="#f4f4ef" font-weight="400">MinIO：新上传原视频与分片；私有 OSS：历史对象与 ASR 派生音频中转。</text>
+<text x="82" y="919" font-size="17" fill="#f4f4ef" font-weight="400">本机完整模式：API 与 Worker 同进程；轻量模式：数据库调度 + 本地向量。</text>
+<text x="82" y="946" font-size="17" fill="#f4f4ef" font-weight="400">Agent：最多 8 次工具调用 / 120 秒 / 2 轮补查；达到上限会说明未检查完。</text>
+<polygon points="275,289 285,289 280,298" fill="#34362f"/>
+<polygon points="275,414 285,414 280,423" fill="#34362f"/>
+<polygon points="275,539 285,539 280,548" fill="#34362f"/>
+<polygon points="275,689 285,689 280,698" fill="#34362f"/>
+<polygon points="815,289 825,289 820,298" fill="#34362f"/>
+<polygon points="815,414 825,414 820,423" fill="#34362f"/>
+<polygon points="815,539 825,539 820,548" fill="#34362f"/>
+<polygon points="589,341 589,351 598,346" fill="#34362f"/>
+<polygon points="1051,741 1051,751 1042,746" fill="#34362f"/>
+<polygon points="1051,341 1051,351 1042,346" fill="#34362f"/>
+</g>
+</svg>
