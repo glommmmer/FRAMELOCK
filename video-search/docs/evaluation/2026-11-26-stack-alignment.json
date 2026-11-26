@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-26",
+  "artifactSha256": "48aae3629533898be08df61d2cb5f86021888b35521c6f880f7bf6f6147a8590",
+  "tests": {
+    "tests": 59,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "components": {
+    "MySQL": "8.4.7 real, isolated integration database",
+    "MinIO": "official RELEASE.2025-09-07T16-13-09Z binary, SHA256 verified local image",
+    "Redis": "7.4 real token bucket/lock/pubsub/memory",
+    "RocketMQ": "5.3.4 real Spring Boot Starter producer/consumer; isolated test topic and group",
+    "Qdrant": "1.18.2 real upsert/filter/delete",
+    "Tesseract": "real WSL English text recognition, chi_sim/eng installed"
+  },
+  "integration": "real MySQL+MinIO+Redis+MQ+Qdrant+FFmpeg upload/parse/search/followup/delete; explicit model substitutes",
+  "offlineEvaluation": "existing predictions recalculated: Recall@5 0.9375, no-answer false positives 0; not a new full-provider benchmark",
+  "remaining": [
+    "separate API/Worker application containers not exercised",
+    "full 12-query provider comparison not rerun",
+    "new MinIO audio to cloud ASR path not exercised end-to-end; existing OSS bridge retained"
+  ],
+  "realProviderChecks": {
+    "searchMatches": 3,
+    "followupMatches": 1,
+    "followupStartMs": 2286,
+    "followupEndMs": 3619,
+    "followupElapsedSeconds": 72.81,
+    "exitReason": "TOOL_LIMIT",
+    "note": "Development fixtures; not a complete post-change benchmark."
+  },
+  "costEstimate": {
+    "additionalYuan": 0.081232,
+    "accountedOrReservedYuan": 3.692733,
+    "supplierInvoice": false
+  }
+}

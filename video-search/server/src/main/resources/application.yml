@@ -1,0 +1,53 @@
+server:
+  address: 127.0.0.1
+  port: ${PORT:8090}
+  servlet:
+    session:
+      timeout: 8h
+      cookie:
+        http-only: true
+        same-site: lax
+spring:
+  application:
+    name: video-search
+  datasource:
+    url: ${VS_DB_URL:jdbc:mysql://localhost:3307/video_search?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+    username: ${VS_DB_USER:video_search}
+    password: ${VS_DB_PASSWORD:}
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 7MB
+logging:
+  level:
+    com.aliyun.oss: "OFF"
+app:
+  dispatcher: ${VS_DISPATCHER:mq}
+  index-mode: ${VS_INDEX_MODE:qdrant}
+  mq:
+    enabled: ${VS_MQ_ENABLED:false}
+  worker:
+    enabled: ${VS_WORKER_ENABLED:false}
+  redis:
+    enabled: ${VS_REDIS_ENABLED:false}
+  data-dir: ${VS_DATA_DIR:.data}
+  storage: ${VS_STORAGE:minio}
+  admin-user: ${VS_ADMIN_USER:demo}
+  admin-password: ${VS_ADMIN_PASSWORD:}
+  oss:
+    endpoint: ${OSS_ENDPOINT:}
+    bucket: ${OSS_BUCKET:}
+    access-key: ${OSS_ACCESS_KEY_ID:}
+    secret-key: ${OSS_ACCESS_KEY_SECRET:}
+
+  minio:
+    endpoint: ${VS_MINIO_ENDPOINT:http://127.0.0.1:9000}
+    bucket: ${VS_MINIO_BUCKET:framelock}
+    access-key: ${VS_MINIO_ACCESS_KEY:}
+    secret-key: ${VS_MINIO_SECRET_KEY:}
+
+rocketmq:
+  name-server: ${VS_MQ_NAMESERVER:127.0.0.1:9876}
+  producer:
+    group: framelock-outbox-v2
+    send-message-timeout: 5000

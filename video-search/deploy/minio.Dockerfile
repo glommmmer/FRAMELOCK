@@ -1,0 +1,5 @@
+FROM scratch
+COPY minio /minio
+COPY LICENSE /LICENSE
+EXPOSE 9000 9001
+ENTRYPOINT ["/minio"]

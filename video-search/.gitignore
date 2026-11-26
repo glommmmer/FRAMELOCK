@@ -1,0 +1,10 @@
+.data/
+output/
+target/
+node_modules/
+dist/
+__pycache__/
+samples/
+tools/ffmpeg/win-x64/ffmpeg.exe
+.env
+*.log

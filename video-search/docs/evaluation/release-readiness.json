@@ -1,0 +1,84 @@
+{
+  "status": "passed",
+  "date": "2026-11-26",
+  "scope": "Release readiness checks",
+  "artifactSha256": "29b185a44498f86584152ae440c6b92c02b06b247409934a6400e45181040632",
+  "backendTests": {
+    "tests": 61,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "cleanCheckoutBackendTests": {
+    "tests": 61,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontendBehaviorTests": {
+    "tests": 3,
+    "failures": 0
+  },
+  "cleanCheckout": {
+    "privateEnvCopied": false,
+    "privateSamplesCopied": false,
+    "originalNodeModulesCopied": false,
+    "originalBuildArtifactsCopied": false,
+    "dependencies": "npm ci and Maven with externally reused dependency cache",
+    "integrationServices": "existing real services; connection settings supplied only through process environment",
+    "input": "FFmpeg-generated six-second silent H.264 test pattern; explicit model substitutes",
+    "testedServerAndWebSourcesMatch": true
+  },
+  "publication": {
+    "privateTmpExcluded": true,
+    "configuredCredentialMatches": 0,
+    "requiredReadmeLinksPublished": true,
+    "historyScanned": false,
+    "note": "No formal workspace Git repository exists; this is a working-tree publication check.",
+    "publishableFileCount": 163
+  },
+  "agent": {
+    "maxTools": 8,
+    "deadlineSeconds": 120,
+    "maxSupplementRounds": 2,
+    "initialAgentCandidates": 2,
+    "initialNormalCandidates": 5,
+    "reserveForSupplement": 2,
+    "newCandidateVerification": "passed",
+    "insufficientRemainingTools": "rejected before retrieval",
+    "checkpointBudgetAndDeadline": "preserved"
+  },
+  "ui": {
+    "normalNoAnswer": "passed",
+    "legacyToolLimit": "passed",
+    "deadline": "passed",
+    "legacyPartialMatches": "passed",
+    "adjustDescriptionFocus": "passed",
+    "mobile390Overflow": false,
+    "stateCases": "browser read-response substitutions; production records unchanged"
+  },
+  "runtime": {
+    "java": "JAVA_HOME or PATH, JDK 21+ validated",
+    "maven": "MAVEN_CMD or PATH",
+    "wsl": "explicit distribution and system default verified",
+    "missingJavaMavenFfmpeg": "actionable errors verified",
+    "stopAndRestart": "passed; own helper removed, volumes preserved",
+    "health": {
+      "application": "FRAMELOCK",
+      "database": "UP",
+      "runtimeMode": "mq",
+      "status": "UP",
+      "storage": "minio"
+    }
+  },
+  "retainedData": {
+    "visibleProjects": 3,
+    "favorites": 1
+  },
+  "modelCallsThisChange": 0,
+  "additionalModelYuan": 0.0,
+  "limits": [
+    "No new real-provider twelve-query evaluation; old development scores remain historical",
+    "Separate application containers still not exercised"
+  ]
+}

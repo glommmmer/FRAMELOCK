@@ -1,0 +1,136 @@
+name: video-search
+services:
+  mysql:
+    image: mysql:8.4.7
+    profiles: [infra, full]
+    mem_limit: 512m
+    command: ["--innodb-buffer-pool-size=128M", "--performance-schema=OFF"]
+    environment:
+      MYSQL_DATABASE: video_search
+      MYSQL_USER: video_search
+      MYSQL_PASSWORD: ${VS_DB_PASSWORD:?Set VS_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${VS_MYSQL_ROOT_PASSWORD:?Set VS_MYSQL_ROOT_PASSWORD}
+    ports: ["127.0.0.1:3307:3306"]
+    volumes: ["mysql-data:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_PASSWORD mysql -uvideo_search -e 'SELECT 1' video_search"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  redis:
+    image: redis:7.4-alpine
+    profiles: [infra, full]
+    mem_limit: 128m
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--requirepass", "${VS_REDIS_PASSWORD:?Set VS_REDIS_PASSWORD}"]
+    ports: ["127.0.0.1:6380:6379"]
+    volumes: ["redis-data:/data"]
+  namesrv:
+    image: apache/rocketmq:5.3.4
+    profiles: [infra, full]
+    mem_limit: 256m
+    command: sh mqnamesrv
+    environment:
+      JAVA_OPT_EXT: "-Xms64m -Xmx128m -Xmn32m"
+    ports: ["127.0.0.1:9876:9876"]
+  broker-volume-init:
+    image: apache/rocketmq:5.3.4
+    profiles: [infra, full]
+    user: "0:0"
+    entrypoint: ["sh", "-c", "chown -R 3000:3000 /home/rocketmq/store"]
+    volumes: ["mq-data:/home/rocketmq/store"]
+  broker:
+    image: apache/rocketmq:5.3.4
+    profiles: [infra, full]
+    mem_limit: 768m
+    depends_on:
+      namesrv: {condition: service_started}
+      broker-volume-init: {condition: service_completed_successfully}
+    command: ["sh", "-c", "printf 'brokerIP1=%s\\n' \"$$VS_BROKER_IP\" > /tmp/video-search-broker.conf; cat /home/rocketmq/broker.conf >> /tmp/video-search-broker.conf; exec sh mqbroker -n namesrv:9876 -c /tmp/video-search-broker.conf"]
+    environment:
+      JAVA_OPT_EXT: "-Xms128m -Xmx256m -Xmn64m -XX:MaxDirectMemorySize=128m"
+      VS_BROKER_IP: ${VS_BROKER_IP:-127.0.0.1}
+    ports: ["127.0.0.1:10911:10911", "127.0.0.1:10909:10909"]
+    volumes:
+      - ./broker.conf:/home/rocketmq/broker.conf:ro
+      - mq-data:/home/rocketmq/store
+  qdrant:
+    image: qdrant/qdrant:v1.18.2
+    profiles: [infra, full]
+    mem_limit: 256m
+    ports: ["127.0.0.1:6333:6333"]
+    volumes: ["qdrant-data:/qdrant/storage"]
+  minio:
+    image: framelock-minio:2025-09-07
+    profiles: [infra, full]
+    mem_limit: 256m
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${VS_MINIO_ACCESS_KEY:?Set VS_MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${VS_MINIO_SECRET_KEY:?Set VS_MINIO_SECRET_KEY}
+    ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
+    volumes: ["minio-data:/data"]
+  api:
+    build: ../server
+    profiles: [full]
+    mem_limit: 512m
+    environment: &app-env
+      SERVER_ADDRESS: 0.0.0.0
+      PORT: 8090
+      VS_DB_URL: jdbc:mysql://mysql:3306/video_search?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+      VS_DB_USER: video_search
+      VS_DB_PASSWORD: ${VS_DB_PASSWORD}
+      VS_ADMIN_USER: ${VS_ADMIN_USER:-demo}
+      VS_ADMIN_PASSWORD: ${VS_ADMIN_PASSWORD:?Set VS_ADMIN_PASSWORD}
+      VS_REDIS_HOST: redis
+      VS_REDIS_PORT: 6379
+      VS_REDIS_PASSWORD: ${VS_REDIS_PASSWORD}
+      VS_MQ_NAMESERVER: namesrv:9876
+      VS_QDRANT_URL: http://qdrant:6333
+      VS_DATA_DIR: /data
+      VS_MQ_ENABLED: "true"
+      VS_REDIS_ENABLED: "true"
+      VS_WORKER_ENABLED: "false"
+      VS_DISPATCHER: mq
+      VS_INDEX_MODE: qdrant
+      FFMPEG_PATH: /usr/bin/ffmpeg
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      DASHSCOPE_BASE_URL: ${DASHSCOPE_BASE_URL:-https://dashscope.aliyuncs.com}
+      VS_STORAGE: minio
+      VS_MINIO_ENDPOINT: http://minio:9000
+      VS_MINIO_ACCESS_KEY: ${VS_MINIO_ACCESS_KEY}
+      VS_MINIO_SECRET_KEY: ${VS_MINIO_SECRET_KEY}
+      VS_OCR_ENABLED: "true"
+      OSS_ENDPOINT: ${OSS_ENDPOINT:-}
+      OSS_BUCKET: ${OSS_BUCKET:-}
+      OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID:-}
+      OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET:-}
+      JAVA_TOOL_OPTIONS: "-Xms64m -Xmx320m"
+    ports: ["127.0.0.1:8090:8090"]
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_started}
+      broker: {condition: service_started}
+      qdrant: {condition: service_started}
+    volumes: ["app-data:/data"]
+  worker:
+    build: ../server
+    profiles: [full]
+    mem_limit: 640m
+    environment:
+      <<: *app-env
+      PORT: 8091
+      VS_WORKER_ENABLED: "true"
+      JAVA_TOOL_OPTIONS: "-Xms64m -Xmx448m"
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_started}
+      broker: {condition: service_started}
+      qdrant: {condition: service_started}
+    volumes: ["app-data:/data"]
+volumes:
+  mysql-data:
+  redis-data:
+  mq-data:
+  qdrant-data:
+  app-data:
+  minio-data:
