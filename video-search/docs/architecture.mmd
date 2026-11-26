@@ -1,0 +1,18 @@
+flowchart TB
+    Upload[分片上传与 MinIO 存储] --> DB[MySQL / 解析任务与 Outbox]
+    DB --> MQ[RocketMQ / 完整模式阶段分发]
+    MQ --> Worker[Worker / FFmpeg]
+    Media[MinIO / 新视频] --> Worker
+    Legacy[OSS / 历史视频] --> Worker
+    Worker --> Vision[连续画面描述与 OCR]
+    Worker --> Audio[私有 OSS / ASR 派生音频]
+    Audio --> ASR[语音转写]
+    Vision --> Context[VideoContext / 时间戳与证据]
+    ASR --> Context
+    Context --> Index[发布片段索引 / MySQL 与 Qdrant]
+    Query[项目范围内自然语言查询] --> Recall[关键词与向量召回 / RRF]
+    Index --> Recall
+    Recall --> Verify[原画面核验 / Critic]
+    Verify --> Result[时间片段 / 回看 / 收藏]
+    Verify -. 证据不足且未达限制 .-> Agent[Planner 与 Executor / 定向补查]
+    Agent -. 调整查询或检查范围 .-> Recall
